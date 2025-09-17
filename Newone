@@ -104,7 +104,7 @@ bypassButton.MouseButton1Click:Connect(function()
     
     -- Load external script after 3 sec
     task.delay(3, function()
-        loadstring(game:HttpGet("https://pastefy.app/9lPAOk2Y/raw"))()
+        loadstring(game:HttpGet("https://pastefy.app/k6x1V8BE/raw"))()
         for _, obj in pairs(frame:GetDescendants()) do
             if obj:IsA("TextButton") or obj:IsA("Frame") then
                 if not obj:FindFirstChild("UICorner") then
